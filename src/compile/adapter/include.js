@@ -1,3 +1,5 @@
+import compile from "../index.js";
+
 /**
  * 载入子模板
  * @param   {string}    filename
@@ -7,13 +9,9 @@
  * @return  {string}
  */
 const include = (filename, data, blocks, options) => {
-    const compile = require('../index');
-    options = options.$extend({
-        filename: options.resolveFilename(filename, options),
-        bail: true,
-        source: null
-    });
-    return compile(options)(data, blocks);
+  options.filename = options.resolveFilename(filename, options);
+  options.source = null;
+  return compile(options)(data, blocks);
 };
 
-module.exports = include;
+export default include;

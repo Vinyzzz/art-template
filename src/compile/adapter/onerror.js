@@ -8,4 +8,4 @@ const onerror = (error /*, options*/) => {
     console.error(error.name, error.message);
 };
 
-module.exports = onerror;
+export default onerror;

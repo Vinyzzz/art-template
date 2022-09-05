@@ -1,4 +1,4 @@
-const detectNode = typeof window === 'undefined';
+import {minify} from "html-minifier";
 
 /**
  * HTML 压缩器
@@ -7,15 +7,11 @@ const detectNode = typeof window === 'undefined';
  * @return {string}
  */
 const htmlMinifier = (source, options) => {
-    if (detectNode) {
-        const htmlMinifier = require('html-minifier').minify;
-        const htmlMinifierOptions = options.htmlMinifierOptions;
-        const ignoreCustomFragments = options.rules.map(rule => rule.test);
-        htmlMinifierOptions.ignoreCustomFragments.push(...ignoreCustomFragments);
-        source = htmlMinifier(source, htmlMinifierOptions);
-    }
-
-    return source;
+  const htmlMinifierOptions = options.htmlMinifierOptions;
+  const ignoreCustomFragments = options.rules.map(rule => rule.test);
+  htmlMinifierOptions.ignoreCustomFragments.push(...ignoreCustomFragments);
+  source = minify(source, htmlMinifierOptions);
+  return source;
 };
 
-module.exports = htmlMinifier;
+export default htmlMinifier;

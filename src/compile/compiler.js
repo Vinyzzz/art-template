@@ -1,5 +1,5 @@
-const esTokenizer = require('./es-tokenizer');
-const tplTokenizer = require('./tpl-tokenizer');
+import esTokenizer from "./es-tokenizer.js";
+import tplTokenizer from "./tpl-tokenizer.js";
 
 /** 传递给模板的数据引用 */
 const DATA = `$data`;
@@ -433,4 +433,4 @@ Compiler.CONSTS = {
     EACH
 };
 
-module.exports = Compiler;
+export default Compiler;

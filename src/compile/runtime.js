@@ -1,10 +1,3 @@
-/*! art-template@runtime | https://github.com/aui/art-template */
-
-const globalThis = typeof self !== 'undefined' ? self
-    : typeof window !== 'undefined' ? window
-    : typeof global !== 'undefined' ? global : {};
-
-const runtime = Object.create(globalThis);
 const ESCAPE_REG = /["&'<>]/;
 
 /**
@@ -12,14 +5,14 @@ const ESCAPE_REG = /["&'<>]/;
  * @param  {any}        content
  * @return {string}
  */
-runtime.$escape = content => xmlEscape(toString(content));
+const $escape = content => xmlEscape(toString(content));
 
 /**
  * 迭代器，支持数组与对象
  * @param {array|Object} data
  * @param {function}     callback
  */
-runtime.$each = (data, callback) => {
+const $each = (data, callback) => {
     if (Array.isArray(data)) {
         for (let i = 0, len = data.length; i < len; i++) {
             callback(data[i], i);
@@ -92,4 +85,7 @@ function xmlEscape(content) {
     }
 }
 
-module.exports = runtime;
+export default {
+    $escape,
+    $each,
+};

@@ -1,55 +1,55 @@
-const assert = require('assert');
-const template = require('../src/index');
-const defaults = require('../src/compile/defaults');
-const path = require('path');
+import assert from "node:assert";
+import template from "../src/index.js";
+import settings from "../src/compile/settings.js";
+import path from "node:path";
+import {fileURLToPath} from "node:url";
 
-const root = defaults.root;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+settings.root = path.join(__dirname, 'res');
 
-module.exports = {
-    before: () => {
-        console.log('#index');
-    },
+describe("#index", () => {
 
-    template: {
-        render: () => {
-            const html = template(__dirname + '/res/template.file.html', {});
-            assert.deepEqual('hello world', html);
-        },
+  it('compile', () => {
+    const word = "world";
+    const render = template('index/template.file.html');
+    const html = render({word});
+    assert.equal('hello world', html);
+  });
 
-        compile: () => {
-            defaults.root = path.join(__dirname, 'res');
-            const render = template('template.file.html');
-            const html = render({});
-            assert.deepEqual('hello world', html);
-            defaults.root = root;
-        },
+  it('render with absolute path', () => {
+    const word = "world";
+    const html = template(path.join(__dirname + '/res/index/template.file.html'), {word});
+    assert.equal(`hello ${word}`, html);
+  });
+  it('render with relative root path', () => {
+    const word = "world";
+    const html1 = template('/index/template.file.html', {word});
+    assert.equal(`hello ${word}`, html1);
+    const html2 = template('index/template.file.html', {word});
+    assert.equal(`hello ${word}`, html2);
+  });
 
-        include: () => {
-            defaults.root = path.join(__dirname, 'res');
-            const html = template('index/index.html', { name: 'aui' });
-            assert.deepEqual(true, html.indexOf('aui') !== -1);
-            assert.deepEqual(true, html.indexOf('糖饼') !== -1);
-            defaults.root = root;
-        },
+  it('include', () => {
+    const html = template('index/index.html', {name: 'parent value'});
+    assert.equal(true, html.includes('parent'));
+    assert.equal(true, html.includes('param'));
+  });
 
-        cache: () => {
-            template('/index.html', 'hi, <%=value%>.');
-            const html = template('/index.html', { value: 'aui' });
-            assert.deepEqual('hi, aui.', html);
-        },
+  it('cache', () => {
+    const value = "Cache Test";
+    template('/index.html', '{{value}} Is OK');
+    const html = template('/index.html', {value});
+    assert.equal(`${value} Is OK`, html);
+  });
 
-        nestedBlockUseActualValue: () => {
-            defaults.root = path.join(__dirname, 'res');
-            const html = template('nested-block/index.art', { hello: 'hello' });
-            assert.deepEqual('hello', html);
-            defaults.root = root;
-        },
+  it('nested block use actual value', () => {
+    const html = template('index/nested-block/index.art', {hello: 'hello'});
+    assert.equal('hello', html);
+  });
 
-        nestedBlockUseDefaultValue: () => {
-            defaults.root = path.join(__dirname, 'res');
-            const html = template('nested-block/default.art', {});
-            assert.deepEqual('default', html);
-            defaults.root = root;
-        }
-    }
-};
+  it('nested block use default value', () => {
+    const html = template('index/nested-block/default.art', {});
+    assert.equal('default', html);
+  });
+
+});

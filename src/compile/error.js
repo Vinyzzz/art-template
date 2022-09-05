@@ -13,7 +13,7 @@ class TemplateError extends Error {
     }
 }
 
-function formatMessage({ name, source, path, line, column, generated, message }) {
+function formatMessage({name, source, path, line, column, generated, message}) {
     if (!source) {
         return message;
     }
@@ -41,4 +41,4 @@ function formatMessage({ name, source, path, line, column, generated, message })
     );
 }
 
-module.exports = TemplateError;
+export default TemplateError;

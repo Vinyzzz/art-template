@@ -1,5 +1,4 @@
-const detectNode = typeof window === 'undefined';
-const LOCAL_MODULE = /^\.+\//;
+import path from "node:path";
 
 /**
  * 获取模板的绝对路径
@@ -8,27 +7,30 @@ const LOCAL_MODULE = /^\.+\//;
  * @return  {string}
  */
 const resolveFilename = (filename, options) => {
-    /* istanbul ignore else  */
-    if (detectNode) {
-        const path = require('path');
-        const root = options.root;
-        const extname = options.extname;
-
-        if (LOCAL_MODULE.test(filename)) {
-            const from = options.filename;
-            const self = !from || filename === from;
-            const base = self ? root : path.dirname(from);
-            filename = path.resolve(base, filename);
-        } else {
-            filename = path.resolve(root, filename);
-        }
-
-        if (!path.extname(filename)) {
-            filename = filename + extname;
-        }
-    }
-
+  const root = options.root;
+  if (filename.startsWith(root)) {
     return filename;
+  }
+
+  const extname = options.extname;
+
+  if (path.isAbsolute(filename)) {
+    filename = path.join(root, filename);
+  } else {
+    if (filename === options.filename) {
+      // 解析自身
+      filename = path.resolve(root, filename);
+    } else {
+      // 解析导入
+      filename = path.resolve(path.dirname(options.filename), filename);
+    }
+  }
+
+  if (!path.extname(filename)) {
+    filename = filename + extname;
+  }
+
+  return filename;
 };
 
-module.exports = resolveFilename;
+export default resolveFilename;

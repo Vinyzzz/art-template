@@ -189,4 +189,4 @@ const artRule = {
     }
 };
 
-module.exports = artRule;
+export default artRule;

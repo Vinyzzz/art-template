@@ -29,4 +29,4 @@ const nativeRule = {
     }
 };
 
-module.exports = nativeRule;
+export default nativeRule;
