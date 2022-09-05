@@ -41,19 +41,17 @@ const compile = (source, options = {}) => {
     options.minimize = false;
   }
 
-  // 转换成绝对路径
+  /** 相对 root 的路径 */
+  let relativePath;
+  // filename 转换成绝对路径
   if (options.filename) {
     options.filename = options.resolveFilename(options.filename, options);
+    relativePath = path.relative(options.root, options.filename);
   }
 
-  /** 相对 root 的路径 */
-  const relativePath = path.relative(options.root, options.filename);
-  if (!relativePath) {
-    throw "未输入 filename 选项或者输入的 filename 相对 root 为空";
-  }
 
   // 匹配缓存
-  if (options.cache) {
+  if (options.cache && relativePath) {
     const render = RenderCache[relativePath];
     if (render) {
       return render;
@@ -120,7 +118,7 @@ const compile = (source, options = {}) => {
   render.sourcesContent = fn.sourcesContent;
   render.toString = () => fn.toString();
 
-  if (options.cache) {
+  if (options.cache && relativePath) {
     RenderCache[relativePath] = render;
   }
 
