@@ -1,5 +1,5 @@
 import assert from "node:assert";
-import template from "../src/index.js";
+import template, {compile} from "../src/index.js";
 import settings from "../src/compile/settings.js";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
@@ -42,6 +42,15 @@ describe("#index", () => {
     assert.equal(`${value} Is OK`, html);
   });
 
+  it('print', () => {
+    const render1 = compile({filename: 'index/print.art', cache: false});
+    const html1 = render1({});
+    assert.equal('<pre>1 &#34;2&#34; {}</pre>', html1);
+    const render2 = compile({filename: 'index/print.art', cache: false, escape: false});
+    const html2 = render2({});
+    assert.equal('> 1 "2" {}', html2);
+  });
+
   it('nested block use actual value', () => {
     const html = template('index/nested-block/index.art', {hello: 'hello'});
     assert.equal('hello', html);
@@ -50,6 +59,11 @@ describe("#index", () => {
   it('nested block use default value', () => {
     const html = template('index/nested-block/default.art', {});
     assert.equal('default', html);
+  });
+
+  it('with htmlMinifier', () => {
+    const html = template('index/index.html');
+    assert.match(html, /><\/?\w+/g);
   });
 
 });

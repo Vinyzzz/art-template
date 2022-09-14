@@ -43,6 +43,8 @@ const FROM = `$$from`;
 /** 编译设置变量 */
 const OPTIONS = `$$options`;
 
+const ARGS_STRINGIFY = "args.map(arg=>typeof arg==='string'||typeof arg==='object'?JSON.stringify(arg):arg).join(' ')";
+
 const has = (object, key) => Object.hasOwnProperty.call(object, key);
 const stringify = JSON.stringify;
 
@@ -53,8 +55,6 @@ class Compiler {
      */
     constructor(options) {
         let source = options.source;
-        const minimize = options.minimize;
-        const htmlMinifier = options.htmlMinifier;
 
         // 编译选项
         this.options = options;
@@ -80,7 +80,9 @@ class Compiler {
             [LINE]: `[0,0]`,
             [BLOCKS]: `arguments[1]||{}`,
             [FROM]: `null`,
-            [PRINT]: `function(){var s=''.concat.apply('',arguments);${OUT}+=s;return s}`,
+            [PRINT]: options.escape ?
+              `(...args)=>'<pre>'+${ESCAPE}(${ARGS_STRINGIFY})+'</pre>'` :
+              `(...args)=>'\\n> '+${ARGS_STRINGIFY}+'\\n'`,
             [INCLUDE]: `function(src,data){var s=${OPTIONS}.include(src,data||${DATA},arguments[2]||${BLOCKS},${OPTIONS});${OUT}+=s;return s}`,
             [EXTEND]: `function(from){${FROM}=from}`,
             [SLICE]: `function(c,p,s){p=${OUT};${OUT}='';c();s=${OUT};${OUT}=p+s;return s}`,
@@ -89,7 +91,7 @@ class Compiler {
 
         // 内置函数依赖关系声明
         this.dependencies = {
-            [PRINT]: [OUT],
+            [PRINT]: [OUT, ESCAPE],
             [INCLUDE]: [OUT, OPTIONS, DATA, BLOCKS],
             [EXTEND]: [FROM, /*[*/ INCLUDE /*]*/],
             [BLOCK]: [SLICE, FROM, OUT, BLOCKS]
@@ -99,12 +101,6 @@ class Compiler {
 
         if (options.compileDebug) {
             this.importContext(LINE);
-        }
-
-        if (minimize) {
-            try {
-                source = htmlMinifier(source, options);
-            } catch (error) {}
         }
 
         this.source = source;
@@ -287,7 +283,7 @@ class Compiler {
 
     /**
      * 编译
-     * @return  {function}
+     * @return  {Render}
      */
     build() {
         const options = this.options;

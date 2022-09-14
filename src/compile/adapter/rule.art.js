@@ -149,7 +149,7 @@ const artRule = {
         }
 
         result.code = code;
-        result.output = output;
+        result.output = key === 'print' ? 'raw' : output;
 
         return result;
     },
