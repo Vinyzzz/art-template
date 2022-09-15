@@ -1,11 +1,11 @@
 import assert from "node:assert";
 import template, {compile} from "../src/index.js";
-import settings from "../src/compile/settings.js";
+import options from "../src/compile/options.js";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-settings.root = path.join(__dirname, 'res');
+options.root = path.join(__dirname, 'res');
 
 describe("#index", () => {
 
@@ -62,7 +62,7 @@ describe("#index", () => {
   });
 
   it('with htmlMinifier', () => {
-    const html = template('index/index.html');
+    const html = template('index/index.html', {});
     assert.match(html, /><\/?\w+/g);
   });
 

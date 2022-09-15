@@ -4,13 +4,10 @@ import onerror from "./adapter/onerror.js";
 import loader from "./adapter/loader.js";
 import artRule from "./adapter/rule.art.js";
 import nativeRule from "./adapter/rule.native.js";
-import htmlMinifier from "./adapter/html-minifier.js";
 import resolveFilename from "./adapter/resolve-filename.js";
 
-/** 模板编译器默认配置 */
-const settings = {
-  // 模板内容。如果没有此字段，则会根据 filename 来加载模板内容
-  source: null,
+/** @type {Options} 模板编译器默认配置 */
+const defaultOptions = {
 
   // 模板名
   filename: null,
@@ -43,9 +40,6 @@ const settings = {
 
   // 子模板编译适配器
   include: include,
-
-  // HTML 压缩器。仅在 NodeJS 环境下有效
-  htmlMinifier: htmlMinifier,
 
   // HTML 压缩器配置。参见 https://github.com/kangax/html-minifier
   htmlMinifierOptions: {
@@ -80,18 +74,18 @@ const settings = {
  * @param options
  */
 function mergeDefault(options) {
-  if (options === settings) {
+  if (options === defaultOptions) {
     return options;
   } else {
-    for (let k in settings) {
+    for (let k in defaultOptions) {
       if (options[k] === undefined) {
-        options[k] = settings[k];
+        options[k] = defaultOptions[k];
       }
     }
   }
 }
 
-export default settings;
 export {
+  defaultOptions as default,
   mergeDefault,
 }

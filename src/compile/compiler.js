@@ -51,10 +51,10 @@ const stringify = JSON.stringify;
 class Compiler {
     /**
      * 模板编译器
-     * @param   {Object}    options
+     * @param   {string}     source
+     * @param   {Options}    options
      */
-    constructor(options) {
-        let source = options.source;
+    constructor(source, options) {
 
         // 编译选项
         this.options = options;
@@ -83,7 +83,7 @@ class Compiler {
             [PRINT]: options.escape ?
               `(...args)=>'<pre>'+${ESCAPE}(${ARGS_STRINGIFY})+'</pre>'` :
               `(...args)=>'\\n> '+${ARGS_STRINGIFY}+'\\n'`,
-            [INCLUDE]: `function(src,data){var s=${OPTIONS}.include(src,data||${DATA},arguments[2]||${BLOCKS},${OPTIONS});${OUT}+=s;return s}`,
+            [INCLUDE]: `(src,data)=>${OUT}+=${OPTIONS}.include(src,data||${DATA},arguments[2]||${BLOCKS},${OPTIONS})`,
             [EXTEND]: `function(from){${FROM}=from}`,
             [SLICE]: `function(c,p,s){p=${OUT};${OUT}='';c();s=${OUT};${OUT}=p+s;return s}`,
             [BLOCK]: `function(){var a=arguments,s;if(typeof a[0]==='function'){return ${SLICE}(a[0])}else if(${FROM}){if(!${BLOCKS}[a[0]]){${BLOCKS}[a[0]]=${SLICE}(a[1])}else{${OUT}+=${BLOCKS}[a[0]]}}else{s=${BLOCKS}[a[0]];if(typeof s==='string'){${OUT}+=s}else{s=${SLICE}(a[1])}return s}}`

@@ -10,8 +10,7 @@ import compile from "../index.js";
  */
 const include = (filename, data, blocks, options) => {
   options.filename = options.resolveFilename(filename, options);
-  options.source = null;
-  return compile(options)(data, blocks);
+  return compile(undefined, options)(data, blocks);
 };
 
 export default include;

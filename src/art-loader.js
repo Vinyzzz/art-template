@@ -1,6 +1,6 @@
 import {readFile} from "fs/promises";
 import {fileURLToPath} from "node:url";
-import {settings} from "./index.js";
+import {options} from "./index.js";
 
 /**
  * @typedef LoadContext
@@ -23,7 +23,7 @@ import {settings} from "./index.js";
  * @returns {Promise<LoadReturns>}
  */
 export async function load(url, context, nextLoad) {
-  if (url.endsWith(settings.extname)) {
+  if (url.endsWith(options.extname)) {
     let path = fileURLToPath(url);
     /** @type string */
     let template = await readFile(path, 'utf-8');

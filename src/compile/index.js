@@ -1,5 +1,5 @@
 import Compiler from "./compiler.js";
-import {mergeDefault} from "./settings.js";
+import {mergeDefault} from "./options.js";
 import TemplateError from "./error.js";
 import path from "node:path";
 
@@ -14,20 +14,13 @@ const debugRender = (error, options) => {
 const RenderCache = Object.create(null);
 /**
  * 编译模版
- * @param {string|Object} source   模板内容
- * @param {?Object}       options  编译选项
- * @return {function}
+ * @param {string}  source     模板内容
+ * @param {Options} [options]  编译选项
+ * @return {Render}
  */
 const compile = (source, options = {}) => {
-  if (typeof source !== 'string') {
-    options = source;
-  } else {
-    options.source = source;
-  }
-
   // 合并默认配置
   mergeDefault(options);
-  source = options.source;
 
   // debug 模式
   /* istanbul ignore if */
@@ -49,7 +42,6 @@ const compile = (source, options = {}) => {
     relativePath = path.relative(options.root, options.filename);
   }
 
-
   // 匹配缓存
   if (options.cache && relativePath) {
     const render = RenderCache[relativePath];
@@ -61,8 +53,7 @@ const compile = (source, options = {}) => {
   // 加载外部模板
   if (!source) {
     try {
-      source = options.loader(options.filename, options);
-      options.source = source;
+      source = options.loader(options.filename);
     } catch (e) {
       const error = new TemplateError({
         name: 'CompileError',
@@ -80,7 +71,7 @@ const compile = (source, options = {}) => {
   }
 
   let fn;
-  const compiler = new Compiler(options);
+  const compiler = new Compiler(source, options);
 
   try {
     fn = compiler.build();
